@@ -107,8 +107,8 @@ public abstract class CpuScheduling {
         this.Pid = new ArrayList<>(Pid);
         this.AT = new ArrayList<>(AT);
         this.BT = new ArrayList<>(BT);
-        TAT = new ArrayList<>();
-        CT = new ArrayList<>();
+        TAT = new ArrayList<>(AT.size());
+        CT = new ArrayList<>(AT.size());
         sortedPid = SortPid();
 
         TotalTAT = 0;
@@ -119,6 +119,12 @@ public abstract class CpuScheduling {
     }
 
     // public Methods
+
+    public void execute() {
+        computeCT();
+        computeTAT();
+        computeWT();
+    }
 
     public int getTotalTurnAroundTime() {
 
@@ -131,7 +137,6 @@ public abstract class CpuScheduling {
     }
 
     public ArrayList<Integer> getTurnAroundTime() {
-        computeTAT();
         return TAT;
     }
 
@@ -143,7 +148,6 @@ public abstract class CpuScheduling {
     }
 
     public ArrayList<Integer> getWaitingTime() {
-        computeWT();
         return WT;
     }
 
@@ -156,7 +160,6 @@ public abstract class CpuScheduling {
     }
 
     public ArrayList<Integer> getComplitionTime() {
-        computeCT();
         return CT;
     }
     public double getAverageWaitingTime() {

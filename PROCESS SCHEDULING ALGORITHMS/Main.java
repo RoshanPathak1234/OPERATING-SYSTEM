@@ -31,8 +31,10 @@ public class Main {
         }
 
         FCFS schedular = new FCFS( Pid , AT , BT );
+        schedular.execute();
         System.out.println(schedular.getComplitionTime());
         System.out.println(schedular.getTotalTurnAroundTime());
+        System.out.println(schedular.getWaitingTime());
 
 
         scan.close();
