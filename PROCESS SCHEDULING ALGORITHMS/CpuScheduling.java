@@ -1,189 +1,101 @@
-/*
-** Algorithms
- * FCFS - First Come First Serve
- * SJF - Shortest Job First
- * LJF - Longest Job First
- * HRRN - Highest Response Ratio Next
- * SRTF - Shortest Remaining Time First
- * LRTF - Longest Remaining time First
- 
-** Important Short Names : 
- * Pid - Process id
- * AT - Arrival Time
- * CT - Completion Time
- * WT - Waiting Time
- * TAT - Turn Around Time
- * BT - Burst Time
- * TQ - Time Quantum
- * CSD - context Switching Delay 
- * th - Throughput
- * RT - Response Time
- * RR - Response Ratio
- * Efficiency - CPU Utiliazation
- */
-
 import java.util.ArrayList;
 
-public abstract class CpuScheduling {
-
-    // private identifiers
-
-    // protected identifiers
-
-    protected ArrayList<Integer> Pid, AT, BT;
-    protected ArrayList<Integer> TAT, CT , WT;
-    protected ArrayList<Integer> sortedPid;
-    protected int TQ, RT, CSD, TotalTAT , TotalWT , Efficiency;
-    protected double RR, th , averageWT , averageTAT;
-
-    // protected abstract identifiers
-
-    protected abstract ArrayList<Integer> SortPid();
-    protected abstract void computeTAT();
-    protected abstract void computeWT();
-    protected abstract void computeCT();
-
-    // protected methods
-
-    protected void nonPreEmptiveTAT() {
-       
-        for(int i = 0; i < sortedPid.size(); i++) {
-            TAT.set(sortedPid.get(i) , CT.get(i) - BT.get(i));
-        }
-    }
-
-    protected void nonPreEmptiveCT() {
-        
-        CT.set(sortedPid.get(0) , BT.get(sortedPid.get(0)));
-        for(int i = 1; i < Pid.size(); i++) {
-            CT.set(sortedPid.get(i) , CT.get(i-1) + BT.get(i));
-        }
-        
-    }
-
-    protected void nonPreEmptiveWT() {
-
-        for(int i = 0; i < Pid.size(); i++) {
-            WT.set(sortedPid.get(i) , TAT.get(i-1) - BT.get(i));
-        }
-
-    }
-
-    protected void preEmptiveTAT() {
-
-    }
-
-    protected void preEmptiveWT() {
-
-    }
-
-    protected void preEmptiveCT() {
-        
-    }
-
-
-    // private methods
-
-    
-
-    // constructors
+public class CpuScheduling {
+    private Strategy strategy;
+    private ArrayList<Integer> Pid, AT, BT, TAT, CT, WT;
 
     public CpuScheduling() {
-        Pid = new ArrayList<>();
-        AT = new ArrayList<>();
-        BT = new ArrayList<>();
-        TAT = new ArrayList<>();
-        CT = new ArrayList<>();
-        sortedPid = new ArrayList<>();
-
-        TotalTAT = 0;
-        TotalWT = 0;
-        Efficiency = 0;
-        th = 0;
-        CSD = 0;
+        this.Pid = new ArrayList<>();
+        this.AT = new ArrayList<>();
+        this.BT = new ArrayList<>();
+        this.TAT = new ArrayList<>();
+        this.CT = new ArrayList<>();
+        this.WT = new ArrayList<>();
     }
 
+    public CpuScheduling(Strategy strategy, ArrayList<Integer> Pid, ArrayList<Integer> AT, ArrayList<Integer> BT) {
+        this.strategy = strategy;
+        this.Pid = new ArrayList<>(Pid);
+        this.AT = new ArrayList<>(AT);
+        this.BT = new ArrayList<>(BT);
+        this.TAT = new ArrayList<>(Pid.size());
+        this.CT = new ArrayList<>(Pid.size());
+        this.WT = new ArrayList<>(Pid.size());
+    }
     public CpuScheduling(ArrayList<Integer> Pid, ArrayList<Integer> AT, ArrayList<Integer> BT) {
         this.Pid = new ArrayList<>(Pid);
         this.AT = new ArrayList<>(AT);
         this.BT = new ArrayList<>(BT);
-        TAT = new ArrayList<>(AT.size());
-        CT = new ArrayList<>(AT.size());
-        sortedPid = SortPid();
-
-        TotalTAT = 0;
-        TotalWT = 0;
-        Efficiency = 0;
-        th = 0;
-        CSD = 0;
+        this.TAT = new ArrayList<>(Pid.size());
+        this.CT = new ArrayList<>(Pid.size());
+        this.WT = new ArrayList<>(Pid.size());
     }
+
 
     // public Methods
 
     public void execute() {
-        computeCT();
-        computeTAT();
-        computeWT();
+        if (strategy == null) {
+            throw new IllegalStateException("No scheduling strategy set");
+        }
+        strategy.execute(AT, BT, CT, TAT, WT);
     }
 
-    public int getTotalTurnAroundTime() {
+    public void execute(Strategy strategy, ArrayList<Integer> Pid, ArrayList<Integer> AT, ArrayList<Integer> BT) {
+        this.strategy = strategy;
+        this.Pid = Pid;
+        this.AT = AT;
+        this.BT = BT;
 
-        for (int num : TAT) {
-            TotalTAT += num;
-        }
+        this.execute();
+    }
 
-        return TotalTAT;
+    public void execute(ArrayList<Integer> Pid, ArrayList<Integer> AT, ArrayList<Integer> BT) {
+        
+        this.Pid = Pid;
+        this.AT = AT;
+        this.BT = BT;
+        
+        this.execute();
+    }
 
+    public void setStrategy(Strategy strategy) {
+        this.strategy = strategy;
+    }
+
+    public Strategy getStrategy(Strategy strategy) {
+         return this.strategy;
+    }
+
+    public ArrayList<Integer> getCompletionTime() {
+        return CT;
     }
 
     public ArrayList<Integer> getTurnAroundTime() {
         return TAT;
     }
 
-    public double getAverageTurnAroundTime() {
-
-        averageTAT = TotalTAT / Pid.size();
-
-        return averageTAT;
-    }
-
     public ArrayList<Integer> getWaitingTime() {
         return WT;
     }
 
-    public int getTotalWaitingTime() {
-
-        for (int el : WT) {
-            TotalWT += el;  
-        }
-        return TotalWT;
-    }
-
-    public ArrayList<Integer> getComplitionTime() {
-        return CT;
-    }
-    public double getAverageWaitingTime() {
-        averageWT = TotalWT / Pid.size();
-
-        return averageWT;
-    }
-
-    public double Throughput() {
-
-        return th;
-
-    }
-
-    public int Efficiency() {
-
-        int totalBT = 0;
-        for (int num : BT) {
-            totalBT += num;
+    public double averageWaitingTime() {
+        double avgWT = 0;
+        for (int number : WT) {
+            avgWT += number;
         }
 
-        Efficiency =  (totalBT / TotalTAT) * 100 ;
-
-        return Efficiency;
+        avgWT = (double)avgWT / WT.size();
+        return avgWT;
     }
 
+    public double averageWTurnAroundTime() {
+        double avgTAT = 0;
+        for (int number : TAT) {
+            avgTAT += number;
+        }
+
+        avgTAT = (double)avgTAT / TAT.size();
+        return avgTAT;
+    }
 }

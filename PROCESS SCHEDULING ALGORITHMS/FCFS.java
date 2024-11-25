@@ -1,36 +1,27 @@
 import java.util.ArrayList;
 
-public class FCFS extends CpuScheduling {
-    MinHeap<Integer> heap;
-
-    // constructors
-
-    public FCFS() {
-        super();
-    }
-
-    public FCFS(ArrayList<Integer> Pid , ArrayList<Integer> AT, ArrayList<Integer> BT) {
-        super(Pid , AT , BT);
-    }
-
-    // Abstract Methods Overriding
+public class FCFS implements Strategy {
 
     @Override
-    protected ArrayList<Integer> SortPid() {
-       heap = new MinHeap<Integer>(this.Pid , this.AT);
-       return heap.heapSort();
-    }
+    public void execute(ArrayList<Integer> AT, ArrayList<Integer> BT, ArrayList<Integer> CT, ArrayList<Integer> TAT, ArrayList<Integer> WT) {
+        int currentTime = 0;
 
-    protected void computeTAT() {
-        this.nonPreEmptiveTAT();
-    }
+        for (int i = 0; i < AT.size(); i++) {
+            if (currentTime < AT.get(i)) {
+                currentTime = AT.get(i); 
+            }
+            currentTime += BT.get(i);
+            CT.add(currentTime);
+        }
 
-    protected void computeCT() {
-        this.nonPreEmptiveCT();
-    }
+        
+        for (int i = 0; i < CT.size(); i++) {
+            TAT.add(CT.get(i) - AT.get(i));
+        }
 
-    protected void computeWT() {
-        this.nonPreEmptiveWT();
+        
+        for (int i = 0; i < TAT.size(); i++) {
+            WT.add(TAT.get(i) - BT.get(i));
+        }
     }
-     
 }
