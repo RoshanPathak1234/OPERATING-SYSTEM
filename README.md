@@ -16,17 +16,6 @@ This project provides a flexible framework to simulate and analyze various **CPU
 2. **`Strategy` (Interface)**:
    - Abstracts scheduling algorithms.
    - Methods to implement:
-     ```java
-     void execute(
-         ArrayList<Integer> Pid,
-         ArrayList<Integer> AT,
-         ArrayList<Integer> BT,
-         ArrayList<Integer> CT,
-         ArrayList<Integer> TAT,
-         ArrayList<Integer> WT,
-         int CSD
-     );
-     ```
 
 3. **Scheduling Algorithm Classes (e.g., `FCFS`, `SJF`)**:
    - Each class implements the `Strategy` interface.
@@ -44,6 +33,8 @@ This project provides a flexible framework to simulate and analyze various **CPU
 - **Algorithms Supported**:
   - FCFS (First-Come, First-Serve)
   - SJF (Shortest Job First)
+  - LJF (Longest Job First)
+  - HRRN (Highest Response Ratio First)
   - Additional algorithms (to be implemented) such as Round-Robin, Priority Scheduling, etc.
   
 - **Metrics Calculated**:
@@ -56,6 +47,7 @@ This project provides a flexible framework to simulate and analyze various **CPU
 
 - **Modular Design**:
   - Easy to add new scheduling algorithms by implementing the `Strategy` interface.
+  - **Design Pattern** -- Strategy Pattern
 
 ---
 
@@ -64,11 +56,11 @@ This project provides a flexible framework to simulate and analyze various **CPU
 ```plaintext
 +-------------------------+
 |       Strategy          |
-|-------------------------|
-| + execute(...)          |
-+-------------------------+
-            ▲
-            |
+|-------------------------|<----------------+ 
+| + execute(...)          |                 |
++-------------------------+                 |
+            ▲                               |
+            |                               |
 +-------------------------+          +-------------------------+
 |     CpuScheduling       |          |      FCFS               |
 |-------------------------|          |-------------------------|
@@ -103,6 +95,15 @@ This project provides a flexible framework to simulate and analyze various **CPU
 ### 2. **Input Format**
    - Enter the number of processes.
    - Input the **Arrival Time (AT)** and **Burst Time (BT)** for each process.
+   - set the strategy :
+        strtegies --  FCFS
+                      SJF
+                      LJF
+                      HRRN
+                      PRIORITY
+                      SRTF
+                      MULTILEVEL FEEDBACK QUEUE
+                      ROUND ROBIN
 
 ### 3. **Output**
    - Displays results for each algorithm:
