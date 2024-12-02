@@ -1,10 +1,12 @@
 *.class
 
-bin/*
+bin/
 
-*/bin
+/bin/
 
-.vscode/*
+.vscode
 
-.LCKCpuScheduling.java
+.vscode/
+
+**/.LCKCpuScheduling.java
 
