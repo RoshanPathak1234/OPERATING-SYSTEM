@@ -8,5 +8,7 @@ bin/
 
 .vscode/
 
+tasks.json
+
 **/.LCKCpuScheduling.java
 

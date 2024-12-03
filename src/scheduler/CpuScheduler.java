@@ -99,7 +99,7 @@ public class CpuScheduler {
             case "fcfs":
                 this.strategy = new FCFS();
                 break;
-            case " sjf":
+            case "sjf":
                 this.strategy = new SJF();
                 break;
             case "priority":
@@ -111,6 +111,12 @@ public class CpuScheduler {
             case "ljf":
                 this.strategy = new LJF();
                 break;
+            case "srtf" :
+                 this.strategy = new SRTF();
+                 break;
+            case "lrtf" :
+                 this.strategy = new LRTF();
+                 break;
             default:
                 throw new IllegalArgumentException("Invalid strategy name: " + strategyName);
         }
