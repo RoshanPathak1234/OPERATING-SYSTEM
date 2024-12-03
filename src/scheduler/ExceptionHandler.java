@@ -1,3 +1,5 @@
+package scheduler;
+
 public class ExceptionHandler {
     
     // Handle MissingStrategyException

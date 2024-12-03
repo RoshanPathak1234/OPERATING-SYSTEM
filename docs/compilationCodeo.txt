@@ -1,0 +1,9 @@
+compile code :
+
+javac -d bin src/scheduler/*.java src/main/Main.java
+
+
+run code : 
+
+java -cp bin main.Main
+

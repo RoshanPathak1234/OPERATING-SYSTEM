@@ -3,23 +3,53 @@ package scheduler;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * The CpuScheduler class is responsible for managing and executing process scheduling strategies.
+ * It initializes processes based on arrival times, burst times, and priorities, and allows
+ * the user to set different scheduling strategies (e.g., FCFS, SJF, Priority Scheduling, HRRN, LJF).
+ */
 public class CpuScheduler {
 
     private Strategy strategy;
     private Process[] processes;
     private int contextSwitchingDelay;
 
-    // Constructor with all parameters optional
+    /**
+     * Constructor to initialize the CpuScheduler with arrival times, burst times, and priorities.
+     * The context switching delay is set to 0 by default.
+     *
+     * @param arrivalTimes An array or list of arrival times for the processes.
+     * @param burstTimes   An array or list of burst times for the processes.
+     * @param priorities   An array or list of priorities for the processes.
+     */
     public CpuScheduler(Object arrivalTimes, Object burstTimes, Object priorities) {
         this.contextSwitchingDelay = 0; // Default to 0
         this.processes = initializeProcesses(arrivalTimes, burstTimes, priorities);
     }
-    public CpuScheduler(Object arrivalTimes, Object burstTimes, Object priorities , int contextSwitchingDelay) {
+
+    /**
+     * Constructor to initialize the CpuScheduler with arrival times, burst times, priorities,
+     * and a context switching delay.
+     *
+     * @param arrivalTimes         An array or list of arrival times for the processes.
+     * @param burstTimes           An array or list of burst times for the processes.
+     * @param priorities           An array or list of priorities for the processes.
+     * @param contextSwitchingDelay The delay incurred during context switching between processes.
+     */
+    public CpuScheduler(Object arrivalTimes, Object burstTimes, Object priorities, int contextSwitchingDelay) {
         this.contextSwitchingDelay = contextSwitchingDelay;
         this.processes = initializeProcesses(arrivalTimes, burstTimes, priorities);
     }
 
-    // Initialize processes
+    /**
+     * Initializes the processes based on the provided arrival times, burst times, and priorities.
+     *
+     * @param arrivalTimes An array or list of arrival times.
+     * @param burstTimes   An array or list of burst times.
+     * @param priorities   An array or list of priorities.
+     * @return An array of Process objects initialized with the provided parameters.
+     * @throws IllegalArgumentException if the input arrays or lists do not have the same size.
+     */
     private Process[] initializeProcesses(Object arrivalTimes, Object burstTimes, Object priorities) {
         int[] arrival = convertToIntArray(arrivalTimes);
         int[] burst = convertToIntArray(burstTimes);
@@ -36,7 +66,13 @@ public class CpuScheduler {
         return processes;
     }
 
-    // Convert input to an integer array
+    /**
+     * Converts the input to an integer array.
+     *
+     * @param input The input to convert, which can be an int[] or a List<Integer>.
+     * @return An integer array containing the converted values.
+     * @throws IllegalArgumentException if the input type is invalid.
+     */
     private int[] convertToIntArray(Object input) {
         if (input instanceof int[]) {
             return (int[]) input;
@@ -52,13 +88,18 @@ public class CpuScheduler {
         }
     }
 
-    // Set the scheduling strategy
+    /**
+     * Sets the scheduling strategy based on the provided strategy name.
+     *
+     * @param strategyName The name of the scheduling strategy (e.g., "fcfs", "sjf", "priority", "hrrn", "ljf").
+     * @throws IllegalArgumentException if the strategy name is invalid.
+     */
     public void setStrategy(String strategyName) {
         switch (strategyName.toLowerCase(Locale.ROOT)) {
             case "fcfs":
                 this.strategy = new FCFS();
                 break;
-            case "sjf":
+            case " sjf":
                 this.strategy = new SJF();
                 break;
             case "priority":
@@ -75,12 +116,21 @@ public class CpuScheduler {
         }
     }
 
-    // Set the scheduling strategy directly
+    /**
+     * Sets the scheduling strategy directly using a Strategy object.
+     *
+     * @param strategy The Strategy object to be used for scheduling.
+     */
     public void setStrategy(Strategy strategy) {
         this.strategy = strategy;
     }
 
-    // Method to set or update priorities
+    /**
+     * Updates the priorities of the existing processes.
+     *
+     * @param priorities An array or list of new priorities for the processes.
+     * @throws IllegalArgumentException if the length of priorities does not match the number of processes.
+     */
     public void setPriorities(Object priorities) {
         int[] priority = convertToIntArray(priorities);
         if (processes.length != priority.length) {
@@ -91,7 +141,12 @@ public class CpuScheduler {
         }
     }
 
-    // Method to set context switching delay
+    /**
+     * Sets the context switching delay.
+     *
+     * @param contextSwitchingDelay The delay incurred during context switching.
+     * @throws IllegalArgumentException if the context switching delay is negative.
+     */
     public void setContextSwitchingDelay(int contextSwitchingDelay) {
         if (contextSwitchingDelay < 0) {
             throw new IllegalArgumentException("Context switching delay cannot be negative.");
@@ -99,7 +154,15 @@ public class CpuScheduler {
         this.contextSwitchingDelay = contextSwitchingDelay;
     }
 
-    // Add a single process
+    /**
+     * Adds a new process to the scheduler.
+     *
+     * @param pid           The process ID.
+     * @param arrivalTime   The arrival time of the process.
+     * @param burstTime     The burst time of the process.
+     * @param priority      The priority of the process (can be null).
+     * @throws IllegalArgumentException if the priority is not greater than 0 for Priority Scheduling.
+     */
     public void addProcess(int pid, int arrivalTime, int burstTime, Integer priority) {
         int processPriority = (priority != null) ? priority : 0;
 
@@ -113,7 +176,11 @@ public class CpuScheduler {
         processes = newProcesses;
     }
 
-    // Execute the selected scheduling strategy
+    /**
+     * Executes the selected scheduling strategy.
+     *
+     * @throws IllegalStateException if the strategy is not set or no processes are added.
+     */
     public void execute() {
         if (strategy == null) {
             throw new IllegalStateException("Strategy is not set. Please set a valid strategy before executing.");
@@ -122,22 +189,21 @@ public class CpuScheduler {
             throw new IllegalStateException("No processes added. Please add processes before executing.");
         }
 
-        // Ensure context switching delay is set to 0 if not provided
-        if (contextSwitchingDelay < 0) {
-            contextSwitchingDelay = 0;
-        }
-
         strategy.execute(processes, contextSwitchingDelay);
     }
 
-    // Reset all processes to their initial state
+    /**
+     * Resets all processes to their initial state.
+     */
     public void reset() {
         for (Process process : processes) {
             process.reset();
         }
     }
 
-    // Print the scheduling results
+    /**
+     * Prints the scheduling results in a formatted table.
+     */
     public void printProcesses() {
         System.out.printf("%-5s %-15s %-15s %-15s %-15s %-15s %-15s %-10s%n",
                 "PID", "Arrival Time", "Burst Time", "Priority", "Completion Time", "TAT", "Waiting Time", "Completed");
@@ -154,7 +220,11 @@ public class CpuScheduler {
         }
     }
 
-    // Performance Metrics
+    /**
+     * Calculates the efficiency of the scheduling.
+     *
+     * @return The efficiency as a double value.
+     */
     public double efficiency() {
         int totalBurstTime = 0;
         int lastCompletionTime = 0;
@@ -167,6 +237,11 @@ public class CpuScheduler {
         return (double) totalBurstTime / lastCompletionTime;
     }
 
+    /**
+     * Calculates the throughput of the scheduling.
+     *
+     * @return The throughput as a double value.
+     */
     public double throughput() {
         int totalProcesses = processes.length;
         int lastCompletionTime = 0;
@@ -178,6 +253,11 @@ public class CpuScheduler {
         return (double) totalProcesses / lastCompletionTime;
     }
 
+    /**
+     * Calculates the average waiting time of the processes.
+     *
+     * @return The average waiting time as a double value.
+     */
     public double averageWaitingTime() {
         int totalWaitingTime = 0;
 
@@ -188,6 +268,11 @@ public class CpuScheduler {
         return (double) totalWaitingTime / processes.length;
     }
 
+    /**
+     * Calculates the average turnaround time of the processes.
+     *
+     * @return The average turnaround time as a double value.
+     */
     public double averageTurnaroundTime() {
         int totalTurnaroundTime = 0;
 
@@ -196,5 +281,22 @@ public class CpuScheduler {
         }
 
         return (double) totalTurnaroundTime / processes.length;
+    }
+
+    /**
+     * Calculates the CPU utilization based on the total burst time and the total time the CPU was busy.
+     *
+     * @return The CPU utilization as a percentage.
+     */
+    public double cpuUtilization() {
+        int totalBurstTime = 0;
+        int lastCompletionTime = 0;
+
+        for (Process process : processes) {
+            totalBurstTime += process.getBurstTime();
+            lastCompletionTime = Math.max(lastCompletionTime, process.getCompletionTime());
+        }
+
+        return (lastCompletionTime > 0) ? (double) totalBurstTime / lastCompletionTime * 100 : 0;
     }
 }
