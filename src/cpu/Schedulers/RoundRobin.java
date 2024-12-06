@@ -1,57 +1,70 @@
-package scheduler;
+package cpu.Schedulers;
 
-import java.util.Comparator;
-import java.util.PriorityQueue;
+import java.util.LinkedList;
+import java.util.Queue;
 
 /**
- * The SRTF class implements the Shortest Remaining Time First scheduling strategy.
- * It preempts the currently running process if a new process arrives with a shorter remaining time.
+ * The RoundRobin class implements the Round Robin scheduling strategy.
+ * It assigns a fixed time quantum to each process in the ready queue.
  */
-public class SRTF implements Strategy {
+public class RoundRobin implements Strategy {
+    private final int timeQuantum; // Time quantum for each process
+
+    /**
+     * Constructor to initialize the Round Robin scheduler with a specified time quantum.
+     *
+     * @param timeQuantum The time quantum for the Round Robin scheduling.
+     */
+    public RoundRobin(int timeQuantum) {
+        this.timeQuantum = timeQuantum;
+    }
 
     @Override
     public void execute(Process[] processes, int contextSwitchingDelay) {
         int n = processes.length;
-
-        // Create a priority queue to hold processes based on remaining time
-        PriorityQueue<Process> queue = new PriorityQueue<>(Comparator.comparingInt(Process::getRemainingTime));
-
+        Queue<Process> queue = new LinkedList<>();
+        
         // Initialize variables
         int currentTime = 0;
         int completedProcesses = 0;
         boolean[] isCompleted = new boolean[n];
 
-        // Set the initial remaining time for each process
+        // Set initial remaining time for each process
         for (Process process : processes) {
             process.setRemainingTime(process.getBurstTime());
         }
 
+       // Main loop until all processes are completed
         while (completedProcesses < n) {
             // Add all processes that have arrived by current time to the queue
             for (Process process : processes) {
                 if (process.getArrivalTime() <= currentTime && !isCompleted[process.getPid() - 1]) {
-                    queue.add(process);
+                    if (!queue.contains(process)) {
+                        queue.add(process);
+                    }
                 }
             }
 
             if (!queue.isEmpty()) {
-                // Get the process with the shortest remaining time
+                // Get the next process from the queue
                 Process currentProcess = queue.poll();
 
-                // Execute the current process for 1 time unit
-                currentProcess.setRemainingTime(currentProcess.getRemainingTime() - 1);
-                currentTime++;
+                // Execute the process for the minimum of time quantum or remaining time
+                int timeToExecute = Math.min(timeQuantum, currentProcess.getRemainingTime());
+                currentProcess.setRemainingTime(currentProcess.getRemainingTime() - timeToExecute);
+                currentTime += timeToExecute;
 
                 // If the process is completed
                 if (currentProcess.getRemainingTime() == 0) {
                     currentProcess.setCompletionTime(currentTime);
                     currentProcess.setTurnAroundTime(currentProcess.getCompletionTime() - currentProcess.getArrivalTime());
                     currentProcess.setWaitingTime(currentProcess.getTurnAroundTime() - currentProcess.getBurstTime());
+                    currentProcess.setCompleted(true);
                     isCompleted[currentProcess.getPid() - 1] = true;
                     completedProcesses++;
                 }
 
-                // Add context switching delay if there are other processes in the queue
+                // Add context switching delay if there are still processes in the queue
                 if (!queue.isEmpty()) {
                     currentTime += contextSwitchingDelay;
                 }

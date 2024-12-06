@@ -1,6 +1,7 @@
 compile code :
+ **     for  cpu scheduling      **
 
-javac -d bin src/scheduler/*.java src/main/Main.java
+javac -d bin src/cpu/Scheduler/*.java src/main/Main.java
 
 
 run code : 

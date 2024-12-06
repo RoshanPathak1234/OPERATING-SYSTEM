@@ -1,4 +1,4 @@
-package scheduler;
+package cpu.Schedulers;
 
 public class HRRN implements Strategy {
 

@@ -1,4 +1,4 @@
-package scheduler;
+package cpu.Schedulers;
 
 /**
  * The Strategy interface defines a contract for different scheduling algorithms

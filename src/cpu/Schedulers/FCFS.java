@@ -1,4 +1,4 @@
-package scheduler;
+package cpu.Schedulers;
 
 import java.util.Arrays;
 

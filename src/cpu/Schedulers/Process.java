@@ -1,4 +1,4 @@
-package scheduler;
+package cpu.Schedulers;
 
 /**
  * The Process class represents a process in a process scheduling system.

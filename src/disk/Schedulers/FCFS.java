@@ -12,8 +12,8 @@ public class FCFS implements Strategy {
         return 0;
     }
 
-    // @Override
-    // public List<Integer> seekSequence() {
-    //     return seekList;
-    // }
+    @Override
+    public List<Integer> seekSequence() {
+        return seekList;
+    }
 }

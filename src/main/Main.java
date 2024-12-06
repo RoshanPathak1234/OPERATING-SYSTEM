@@ -1,18 +1,17 @@
 package main;
 
-import scheduler.CpuScheduler;
-import scheduler.RoundRobin;
+import cpu.Schedulers.*;
 
 public class Main {
     public static void main(String[] args) {
         // Initialize processes with arrival times, burst times, and optional priorities
-        int[] arrivalTimes = {0, 2, 4, 6 , 11,3,2,5,18 , 0};
-        int[] burstTimes = {7, 4, 1, 4,4,23,12,21,13 , 25};
-        int[] priorities = {2, 1, 3, 2,5 ,1 ,7, 2 ,5 , 1 }; // Required only for Priority Scheduling
-        int contextSwitchingDelay = 2;
+        int[] arrivalTimes = {0,1,2,3,4};
+        int[] burstTimes = {4,3,1,2,5};
+        int[] priorities = {1,1,1,1,1}; // Required only for Priority Scheduling
+        int contextSwitchingDelay = 0;
 
         // Initialize the CPU Scheduling object
-        CpuScheduler scheduler = new CpuScheduler(arrivalTimes, burstTimes, priorities, contextSwitchingDelay);
+        scheduler scheduler = new scheduler(arrivalTimes, burstTimes, priorities, contextSwitchingDelay);
 
         // First, FCFS Scheduling
         System.out.println("=== FCFS Scheduling ===");
@@ -86,10 +85,29 @@ public class Main {
         printAdditionalMetrics(scheduler);
         scheduler.reset();
 
+         System.out.println("=== MLFQ Scheduling ===");
+
+        // Define the strategies for the queues
+        Strategy[] strategies = {
+            new FCFS(),       // Queue 1: FCFS
+            new SJF(),        // Queue 2: SJF
+            new RoundRobin(1), // Queue 3: Round Robin
+            new SRTF()        // Queue 4: SRTF
+        };
+
+        // Initialize the MultiLevelFeedbackQueue with 4 levels and strategies
+        MultiLevelFeedbackQueue mlfq = new MultiLevelFeedbackQueue(4, strategies);
+        
+        // Execute the MLFQ strategy
+        scheduler.setStrategy(mlfq);
+        scheduler.execute();
+        scheduler.printProcesses();
+        printAdditionalMetrics(scheduler);
+        scheduler.reset();
     }
 
     // Print additional metrics for each algorithm
-    private static void printAdditionalMetrics(CpuScheduler scheduler) {
+    private static void printAdditionalMetrics(scheduler scheduler) {
         System.out.printf("\nEfficiency: %.2f%%\n", scheduler.efficiency() * 100);
         System.out.printf("Cpu Utilization : %.2f %%\n" , scheduler.cpuUtilization());
         System.out.printf("Throughput: %.2f processes/ms\n", scheduler.throughput());

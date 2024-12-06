@@ -8,4 +8,9 @@ public class LOOK  implements Strategy{
         // TODO Auto-generated method stub
         return 0;
     }
+    @Override
+    public List<Integer> seekSequence() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

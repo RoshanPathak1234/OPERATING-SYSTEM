@@ -1,4 +1,4 @@
-package scheduler;
+package cpu.Schedulers;
 
 import java.util.List;
 import java.util.Locale;
@@ -8,7 +8,7 @@ import java.util.Locale;
  * It initializes processes based on arrival times, burst times, and priorities, and allows
  * the user to set different scheduling strategies (e.g., FCFS, SJF, Priority Scheduling, HRRN, LJF).
  */
-public class CpuScheduler {
+public class scheduler {
 
     private Strategy strategy;
     private Process[] processes;
@@ -22,7 +22,7 @@ public class CpuScheduler {
      * @param burstTimes   An array or list of burst times for the processes.
      * @param priorities   An array or list of priorities for the processes.
      */
-    public CpuScheduler(Object arrivalTimes, Object burstTimes, Object priorities) {
+    public scheduler(Object arrivalTimes, Object burstTimes, Object priorities) {
         this.contextSwitchingDelay = 0; // Default to 0
         this.processes = initializeProcesses(arrivalTimes, burstTimes, priorities);
     }
@@ -36,7 +36,7 @@ public class CpuScheduler {
      * @param priorities           An array or list of priorities for the processes.
      * @param contextSwitchingDelay The delay incurred during context switching between processes.
      */
-    public CpuScheduler(Object arrivalTimes, Object burstTimes, Object priorities, int contextSwitchingDelay) {
+    public scheduler(Object arrivalTimes, Object burstTimes, Object priorities, int contextSwitchingDelay) {
         this.contextSwitchingDelay = contextSwitchingDelay;
         this.processes = initializeProcesses(arrivalTimes, burstTimes, priorities);
     }

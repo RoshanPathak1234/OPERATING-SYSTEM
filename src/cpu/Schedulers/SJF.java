@@ -1,13 +1,13 @@
-package scheduler;
+package cpu.Schedulers;
 
 import java.util.Arrays;
 
-public class LJF implements Strategy {
+public class SJF implements Strategy {
 
     @Override
     public void execute(Process[] processes, int contextSwitchingDelay) {
-        // Sort processes in descending order of burst time (Longest Job First)
-        Arrays.sort(processes, (p1, p2) -> Integer.compare(p2.getBurstTime(), p1.getBurstTime()));
+        // Sort processes in ascending order of burst time (Shortest Job First)
+        Arrays.sort(processes, (p1, p2) -> Integer.compare(p1.getBurstTime(), p2.getBurstTime()));
 
         int currentTime = 0;
 
